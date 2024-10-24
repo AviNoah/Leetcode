@@ -80,6 +80,11 @@ def sol2(heights: list[int]) -> int:
     Need to figure out what to do with the very start, since it must descend first.
     """
 
+    """
+    This approach is problematic because what if we have a dip with-in a bigger dip -
+    We will count that dip twice, making out count inaccurate
+    """
+
     # The descending order index stack
     index_stack: list[int] = list()
     area = 0

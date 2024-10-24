@@ -6,7 +6,7 @@ it ends being collected once the second number is bigger than the first.
 """
 
 
-def nge(heights: list[int]) -> list[int]:
+def nge(heights: list[int]) -> tuple[list[int], int]:
     """
     Given a list of heights, return a list of indices, where for elem i,
     is the index to the nge
@@ -18,6 +18,7 @@ def nge(heights: list[int]) -> list[int]:
     results = [-1] * len(heights)  # By default none have nge
 
     index_stack: list[int] = list()
+    area = 0
 
     # As long as it is descending, add to stack, when it is not
     # we will pop the stack until it is descending again.
@@ -30,11 +31,13 @@ def nge(heights: list[int]) -> list[int]:
 
         # If asc
         while index_stack and h >= heights[index_stack[-1]]:
-            results[index_stack.pop()] = i  # O(1)
+            index = index_stack.pop()
+            results[index] = i  # O(1)
+            area += h - heights[index]
 
         index_stack.append(i)  # O(1)
 
-    return results
+    return results, area
 
 
 def sol(heights: list[int]) -> int:
@@ -49,10 +52,9 @@ def sol(heights: list[int]) -> int:
 
     # We need to know ahead of time the index of the next nge, and if there is one
 
-    indices = nge(heights)  # O(n)
+    indices, area = nge(heights)  # O(n)
 
     i = 0
-    area = 0
     while i < len(heights):
         if indices[i] == -1:
             # Skip
@@ -70,5 +72,35 @@ def sol(heights: list[int]) -> int:
         area += (indices[i] - i - 1) * heights[i] - blocked_area
 
         i = indices[i]
+
+    return area
+
+
+def sol2(heights: list[int]) -> int:
+    """
+    In order to trap water, bars MUST descend and then ascend again.
+    We will keep a stack of the indices of heights in descending order
+    and maintain the descending order as much as we can, if there is an ascension,
+    pop elements out of the stack, and those will be the collected rain drops.
+
+    Need to figure out what to do with the very start, since it must descend first.
+    """
+
+    # The descending order index stack
+    index_stack: list[int] = list()
+    area = 0
+
+    for i, h in enumerate(heights):
+        # If desc, continue filling stack
+        if not index_stack or h < heights[index_stack[-1]]:
+            index_stack.append(i)  # O(1)
+            continue
+
+        # If asc, empty stack until desc and add to area
+        while index_stack and h >= heights[index_stack[-1]]:
+            index = index_stack.pop()
+            area += h - heights[index]
+
+        index_stack.append(i)  # O(1)
 
     return area

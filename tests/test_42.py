@@ -1,5 +1,5 @@
 import pytest
-from problems.prob_42 import sol, nge
+from problems.prob_42 import sol, nge, sol2
 
 tests = [
     (([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1],), 6),
@@ -15,6 +15,11 @@ tests = [
 @pytest.mark.parametrize("args, expected", tests)
 def test_0(args, expected):
     assert sol(*args) == expected
+
+
+@pytest.mark.parametrize("args, expected", tests)
+def test_1(args, expected):
+    assert sol2(*args) == expected
 
 
 def test_nge():

@@ -4,7 +4,6 @@
 Rain water can be collected only if its between two non-zero numbers,
 it ends being collected once the second number is bigger than the first.
 """
-from collections import deque
 
 
 def nge(heights: list[int]) -> list[int]:
@@ -18,23 +17,22 @@ def nge(heights: list[int]) -> list[int]:
     """
     results = [-1] * len(heights)  # By default none have nge
 
-    # We will stack heights in descending order, if the next height
-    # is bigger than the top of the stack, we will pop the stack until it isn't
-    # marking the height as their nge
-    # We will store their indices instead of the height values
-    stack: deque[int] = deque()  # Use deque for O(1) popleft
+    index_stack: list[int] = list()
 
-    # O(n)
+    # As long as it is descending, add to stack, when it is not
+    # we will pop the stack until it is descending again.
+
     for i, h in enumerate(heights):
-        if not stack or h < heights[stack[0]]:
-            # If still descending, continue
-            stack.append(i)  # O(1)
+        # If desc
+        if not index_stack or h < heights[index_stack[-1]]:
+            index_stack.append(i)  # O(1)
             continue
 
-        while stack and h >= heights[stack[0]]:
-            results[stack.popleft()] = i  # O(1)
+        # If asc
+        while index_stack and h >= heights[index_stack[-1]]:
+            results[index_stack.pop()] = i  # O(1)
 
-        stack.appendleft(i)  # O(1)
+        index_stack.append(i)  # O(1)
 
     return results
 
@@ -78,3 +76,5 @@ def sol(heights: list[int]) -> int:
             i += 1
 
     return area
+
+return sol(heights)

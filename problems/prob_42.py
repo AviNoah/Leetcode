@@ -71,8 +71,4 @@ def sol(heights: list[int]) -> int:
 
         i = indices[i]
 
-    for i in range(len(heights)):
-        for i in range(i, indices[i]):
-            i += 1
-
     return area

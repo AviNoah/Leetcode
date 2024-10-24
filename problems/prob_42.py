@@ -76,5 +76,3 @@ def sol(heights: list[int]) -> int:
             i += 1
 
     return area
-
-return sol(heights)

@@ -6,7 +6,10 @@ tests = [
     (("of", "A lot of words"), False),
     (("Frog cool", "Frogs are cool"), False),
     (("Eating right now", "Eating"), True),
+    (("Eating right now", "now"), True),
     (("hello world", "hello world"), True),
+    (("c h p Ny", "c BDQ r h p Ny"), True),
+    (("Ogn WtWj HneS", "Ogn WtWj HneS"), True),
 ]
 
 

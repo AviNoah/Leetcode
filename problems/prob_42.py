@@ -1,8 +1,22 @@
 # https://leetcode.com/problems/trapping-rain-water
+"""
+We will use a monotonic stack to find the Next Greater Element (NGE) for indices in the array. 
+There are two key scenarios during this process:
+
+Scenario A: The current index has an NGE (i.e., the NGE is not -1).
+Scenario B: The current index does not have an NGE (i.e., the NGE is -1).
+
+Starting at index i = 0, we will continue processing indices until i is out of bounds:
+    If Scenario A: Traverse from the current index i to its NGE and calculate the trapped 
+        rainwater in this range. Update i to the NGE after processing.
+    If Scenario B: Skip to the next index whose NGE is also -1 (the next occurrence of Scenario B), 
+        and calculate the trapped rainwater in this section. Update i accordingly.
+"""
 
 
-# O(n)
+# O(n) Monotonic stack
 def arr_of_nge(heights: list[int]) -> list[int]:
+    
     "Return a list of nge - next greatest or equal, for each element at index i; -1 means no nge"
     results = [-1] * len(heights)
     # stack of indices
@@ -50,33 +64,3 @@ def sol(heights: list[int]) -> int:
         i += 1
 
     return area
-
-
-# Find the next -1
-# old_i = i
-# potential_area = 0
-# for i in range(i + 1, len(nge_arr)):
-#     if nge_arr[i] != -1:
-#         potential_area -= heights[i]
-#     else:
-#         potential_area += (i - old_i - 1) * heights[i]
-#         area += potential_area
-#         break
-# i += 1
-# if nge_index != -1:
-#             # maximum possible area this range could cover
-#             area += (nge_index - i - 1) * heights[i]
-#             # Deduct blocking heights from the area
-#             for i in range(i + 1, nge_index):
-#                 area -= heights[i]
-#         else:
-#             # Advance until the next -1
-#             blocked_area = 0
-#             for j in range(i + 1, len(nge_arr)):
-#                 if nge_arr[j] == -1:
-#                     area += (j - i - 1) * heights[j] - blocked_area
-#                     j = i
-#                     break
-#                 else:
-#                     blocked_area += heights[j]
-#         i += 1

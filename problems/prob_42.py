@@ -1,105 +1,82 @@
 # https://leetcode.com/problems/trapping-rain-water
 
-# def nge(heights: list[int]) -> tuple[list[int], int]:
-#     """
-#     Given a list of heights, return a list of indices, where for elem i,
-#     is the index to the nge
 
-#     nge is the next element that is greater or equal to the element at i
+# O(n)
+def arr_of_nge(heights: list[int]) -> list[int]:
+    "Return a list of nge - next greatest or equal, for each element at index i; -1 means no nge"
+    results = [-1] * len(heights)
+    # stack of indices
+    stack: list[int] = []
 
-#     -1 means no nge was found
-#     """
-#     results = [-1] * len(heights)  # By default none have nge
+    for i in range(len(heights)):
+        while stack and heights[i] >= heights[stack[-1]]:
+            results[stack.pop()] = i
 
-#     index_stack: list[int] = list()
-#     area = 0
+        stack.append(i)
 
-#     # As long as it is descending, add to stack, when it is not
-#     # we will pop the stack until it is descending again.
-
-#     for i, h in enumerate(heights):
-#         # If desc
-#         if not index_stack or h < heights[index_stack[-1]]:
-#             index_stack.append(i)  # O(1)
-#             continue
-
-#         # If asc
-#         while index_stack and h >= heights[index_stack[-1]]:
-#             index = index_stack.pop()
-#             results[index] = i  # O(1)
-#             area += h - heights[index]
-
-#         index_stack.append(i)  # O(1)
-
-#     return results, area
+    return results
 
 
-# def sol(heights: list[int]) -> int:
-#     # We can implement a nge - next greatest or equal element, method, that will find the index of the
-#     # next biggest element for every index i
+def sol(heights: list[int]) -> int:
+    # If encounter -1, continue until next -1.
 
-#     # Then, to simplify rain collection - for example between two big numbers we may have
-#     # bars that take the place of a rain water slot, we can deduce that the maximum
-#     # rain area between them is at most the distance between them, times the height of the first number
-#     # which is always smaller, we then go along the indices between them and deduct the values
-#     # of the bars since that is how much space they take
-
-#     # We need to know ahead of time the index of the next nge, and if there is one
-
-#     indices, area = nge(heights)  # O(n)
-
-#     i = 0
-#     while i < len(heights):
-#         if indices[i] == -1:
-#             # Skip
-#             i += 1
-#             continue
-
-#         blocked_area = 0
-
-#         for j in range(i + 1, indices[i]):
-#             # Sum blocking heights
-#             blocked_area += heights[j]
-
-#         # Add the maximum possible area (distance between bars times height of first bar)
-#         # and deduct the blocking bars between them
-#         area += (indices[i] - i - 1) * heights[i] - blocked_area
-
-#         i = indices[i]
-
-#     return area
-
-
-def sol2(heights: list[int]) -> int:
-    """
-    In order to trap water, bars MUST descend and then ascend again.
-    We will keep a stack of the indices of heights in descending order
-    and maintain the descending order as much as we can, if there is an ascension,
-    pop elements out of the stack, and those will be the collected rain drops.
-
-    Need to figure out what to do with the very start, since it must descend first.
-    """
-
-    """
-    This approach is problematic because what if we have a dip with-in a bigger dip -
-    We will count that dip twice, making out count inaccurate
-    """
-
-    # The descending order index stack
-    index_stack: list[int] = list()
+    nge_arr = arr_of_nge(heights)
     area = 0
+    i = 0
 
-    for i, h in enumerate(heights):
-        # If desc, continue filling stack
-        if not index_stack or h < heights[index_stack[-1]]:
-            index_stack.append(i)  # O(1)
-            continue
+    while i < len(nge_arr):
+        nge_index = nge_arr[i]
+        if nge_index != -1:
+            # Max possible potential
+            potential_area = (nge_index - i - 1) * heights[i]
+            # Remove blocking heights
+            for i in range(i + 1, nge_index):
+                potential_area -= heights[i]
 
-        # If asc, empty stack until desc and add to area
-        while index_stack and h >= heights[index_stack[-1]]:
-            index = index_stack.pop()
-            area += h - heights[index]
+            area += potential_area
 
-        index_stack.append(i)  # O(1)
+        else:
+            j = i + 1
+            potential_area = 0
+            while j < len(nge_arr):
+                if nge_arr[j] != -1:
+                    potential_area -= heights[j]
+                else:
+                    potential_area += (j - i - 1) * heights[j]
+                    area += potential_area
+                    i = j - 1
+                    break
+                j += 1
+        i += 1
 
     return area
+
+
+# Find the next -1
+# old_i = i
+# potential_area = 0
+# for i in range(i + 1, len(nge_arr)):
+#     if nge_arr[i] != -1:
+#         potential_area -= heights[i]
+#     else:
+#         potential_area += (i - old_i - 1) * heights[i]
+#         area += potential_area
+#         break
+# i += 1
+# if nge_index != -1:
+#             # maximum possible area this range could cover
+#             area += (nge_index - i - 1) * heights[i]
+#             # Deduct blocking heights from the area
+#             for i in range(i + 1, nge_index):
+#                 area -= heights[i]
+#         else:
+#             # Advance until the next -1
+#             blocked_area = 0
+#             for j in range(i + 1, len(nge_arr)):
+#                 if nge_arr[j] == -1:
+#                     area += (j - i - 1) * heights[j] - blocked_area
+#                     j = i
+#                     break
+#                 else:
+#                     blocked_area += heights[j]
+#         i += 1

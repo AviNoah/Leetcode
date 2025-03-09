@@ -13,7 +13,7 @@ def func(colors: list[int], k: int):
     start = 0
     end = 0
 
-    for i in range(len(colors) + k):
+    for i in range(1, len(colors) + k):
         if end - start == k - 1:
             count += 1
             start += 1

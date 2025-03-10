@@ -2,49 +2,44 @@
 
 
 def func(word: str, k: int):
-    # Find all consonant indices
-    indices = [-1] + [i for i, c in enumerate(word) if c not in "aeiou"] + [len(word)]
+    # We will use a sliding window technique to find at least k consonants with aeiou
+    # The count of at least k + 1 - at least k consonants is exactly k consonants
+    # Since it remove all the counts where there are more than k consonants
+    # at_least(k) = exactly(k) + at_least(k+1) => at_least(k) = exactly(k) - at_least(k+1)
 
-    def valid_count(sub_word, vowels: dict) -> int:
-        nonlocal seen
-        # Need to trim left, right or both and advance only if still valid
-        if not all(vowels.values()):
-            return 0
-        if sub_word in seen:
-            return 0
+    def at_least(k: int):
+        nonlocal word
+        count = 0
 
-        seen.add(sub_word)
+        vowels = {v: 0 for v in "aeiuo"}
+        consonants = 0
 
-        count = 1
-        copy = vowels.copy()
-        if sub_word[0] in "aeiou":
-            copy[sub_word[0]] -= 1
-            count += valid_count(sub_word[1:], copy)
+        def add_char(char):
+            nonlocal vowels, consonants
+            if char in "aeiou":
+                vowels[char] += 1
+            else:
+                consonants += 1
 
-        copy = vowels.copy()
-        if sub_word[-1] in "aeiou":
-            copy[sub_word[-1]] -= 1
-            count += valid_count(sub_word[:-1], copy)
+        def remove_char(char):
+            nonlocal vowels, consonants
+            if char in "aeiou":
+                vowels[char] -= 1
+            else:
+                consonants -= 1
+
+        left = 0
+
+        for right, char in enumerate(word):
+            add_char(char)
+
+            while consonants >= k and all(vowels.values()):
+                count += len(word) - right
+
+                # Trim the left
+                remove_char(word[left])
+                left += 1
 
         return count
 
-    count = 0
-    i = 0
-    while i + k + 1 < len(indices):
-        # Include k consonants
-        st = indices[i] + 1
-        ed = indices[i + k + 1]
-
-        vowels = {v: 0 for v in "aeiou"}
-        sub_word = word[st:ed]
-
-        for char in sub_word:
-            if char in "aeiou":
-                vowels[char] += 1
-
-        # Ensure uniques
-        seen = set()
-        count += valid_count(sub_word, vowels)
-        i += 1
-
-    return count
+    return at_least(k) - at_least(k + 1)

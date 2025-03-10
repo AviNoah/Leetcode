@@ -8,6 +8,7 @@ tests = [
     (("iqeaouqi", 2), 3),
     (("aadieuoh", 1), 2),
     (("aoaiuefi", 1), 4),
+    (("icuaeuio", 0), 2),
 ]
 
 

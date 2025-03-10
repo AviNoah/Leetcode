@@ -3,52 +3,28 @@
 
 def func(word: str, k: int):
     # Find all consonant indices
-    indices = [0] + [i for i, c in enumerate(word) if c not in "aeiou"] + [len(word)]
+    indices = [-1] + [i for i, c in enumerate(word) if c not in "aeiou"] + [len(word)]
 
-    def valid_count(sub_word: str) -> int:
-        # Run two pointers between them and count all valid substrings
-
-        # This sub word contains only k consonants and vowels
-        count = 0
-        vowels = {v: 0 for v in "aeiou"}
-
-        for char in sub_word:
-            if char in "aeiou":
-                vowels[char] += 1
-
-        vowels_copy = vowels.copy()
-
-        if not all(vowels_copy.values()):
-            # Return early no way to cut.
+    def valid_count(sub_word, vowels: dict) -> int:
+        nonlocal seen
+        # Need to trim left, right or both and advance only if still valid
+        if not all(vowels.values()):
+            return 0
+        if sub_word in seen:
             return 0
 
-        count += 1
+        seen.add(sub_word)
 
-        # Left trim
-        for char in sub_word:
-            if char not in "aeiou":
-                break
+        count = 1
+        copy = vowels.copy()
+        if sub_word[0] in "aeiou":
+            copy[sub_word[0]] -= 1
+            count += valid_count(sub_word[1:], copy)
 
-            vowels_copy[char] -= 1
-
-            if not all(vowels_copy.values()):
-                break
-
-            count += 1
-
-        vowels_copy = vowels.copy()
-
-        # Right trim
-        for char in sub_word[::-1]:
-            if char not in "aeiou":
-                break
-
-            vowels_copy[char] -= 1
-
-            if not all(vowels_copy.values()):
-                break
-
-            count += 1
+        copy = vowels.copy()
+        if sub_word[-1] in "aeiou":
+            copy[sub_word[-1]] -= 1
+            count += valid_count(sub_word[:-1], copy)
 
         return count
 
@@ -56,9 +32,19 @@ def func(word: str, k: int):
     i = 0
     while i + k + 1 < len(indices):
         # Include k consonants
-        st = indices[i]
+        st = indices[i] + 1
         ed = indices[i + k + 1]
-        count += valid_count(word[st:ed])
+
+        vowels = {v: 0 for v in "aeiou"}
+        sub_word = word[st:ed]
+
+        for char in sub_word:
+            if char in "aeiou":
+                vowels[char] += 1
+
+        # Ensure uniques
+        seen = set()
+        count += valid_count(sub_word, vowels)
         i += 1
 
     return count

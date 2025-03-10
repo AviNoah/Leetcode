@@ -8,37 +8,44 @@ def func(word: str, k: int):
     # and keep track if we have a complete aeiou and consonant count
 
     count = 0
+
+    start = 0
+    end = 0
+
     vowels = {v: 0 for v in "aeiou"}
     consonants = 0
 
-    start = 0
-
-    def remove_char(char: str):
+    def remove_char(char):
         nonlocal vowels, consonants
         if char in "aeiou":
             vowels[char] -= 1
         else:
             consonants -= 1
 
-    def add_char(char: str):
+    def add_char(char):
         nonlocal vowels, consonants
         if char in "aeiou":
             vowels[char] += 1
         else:
             consonants += 1
 
-    for i in range(len(word)):
-        if all(vowels.values()) and consonants == k:
+    while start <= end and end < len(word):
+        add_char(word[end])
+        end += 1
+
+        if consonants > k:
             remove_char(word[start])
-            count += 1
             start += 1
-        elif consonants > k:
-            for _ in range(k, consonants):
-                remove_char(word[start])
-                start += 1
+        if consonants == k and all(vowels.values()):
+            count += 1
 
-        add_char(word[i])
+    # Start trimming from the start to make sure we can get all sub strings
+    while start <= end:
+        remove_char(word[start])
+        start += 1
+        if consonants == k and all(vowels.values()):
+            count += 1
+        else:
+            break
 
-    if all(vowels.values()) and consonants == k:
-        count += 1
     return count

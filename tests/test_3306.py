@@ -6,6 +6,7 @@ tests = [
     (("aeiou", 0), 1),
     (("ieaouqqieaouqq", 1), 3),
     (("iqeaouqi", 2), 3),
+    (("aadieuoh", 1), 2),
 ]
 
 

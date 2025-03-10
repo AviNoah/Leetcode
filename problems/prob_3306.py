@@ -2,50 +2,63 @@
 
 
 def func(word: str, k: int):
-    # Since we can have multiple aeiou's and only k consonants, we need a two pointer method
+    # Find all consonant indices
+    indices = [0] + [i for i, c in enumerate(word) if c not in "aeiou"] + [len(word)]
 
-    # The key is to only account for the start index when advancing
-    # and keep track if we have a complete aeiou and consonant count
+    def valid_count(sub_word: str) -> int:
+        # Run two pointers between them and count all valid substrings
+
+        # This sub word contains only k consonants and vowels
+        count = 0
+        vowels = {v: 0 for v in "aeiou"}
+
+        for char in sub_word:
+            if char in "aeiou":
+                vowels[char] += 1
+
+        vowels_copy = vowels.copy()
+
+        if not all(vowels_copy.values()):
+            # Return early no way to cut.
+            return 0
+
+        count += 1
+
+        # Left trim
+        for char in sub_word:
+            if char not in "aeiou":
+                break
+
+            vowels_copy[char] -= 1
+
+            if not all(vowels_copy.values()):
+                break
+
+            count += 1
+
+        vowels_copy = vowels.copy()
+
+        # Right trim
+        for char in sub_word[::-1]:
+            if char not in "aeiou":
+                break
+
+            vowels_copy[char] -= 1
+
+            if not all(vowels_copy.values()):
+                break
+
+            count += 1
+
+        return count
 
     count = 0
-
-    start = 0
-    end = 0
-
-    vowels = {v: 0 for v in "aeiou"}
-    consonants = 0
-
-    def remove_char(char):
-        nonlocal vowels, consonants
-        if char in "aeiou":
-            vowels[char] -= 1
-        else:
-            consonants -= 1
-
-    def add_char(char):
-        nonlocal vowels, consonants
-        if char in "aeiou":
-            vowels[char] += 1
-        else:
-            consonants += 1
-
-    while start <= end and end < len(word):
-        add_char(word[end])
-        end += 1
-
-        if consonants > k:
-            remove_char(word[start])
-            start += 1
-        if consonants == k and all(vowels.values()):
-            count += 1
-
-    # Start trimming from the start to make sure we can get all sub strings
-    while start <= end:
-        remove_char(word[start])
-        start += 1
-        if consonants == k and all(vowels.values()):
-            count += 1
-        else:
-            break
+    i = 0
+    while i + k + 1 < len(indices):
+        # Include k consonants
+        st = indices[i]
+        ed = indices[i + k + 1]
+        count += valid_count(word[st:ed])
+        i += 1
 
     return count

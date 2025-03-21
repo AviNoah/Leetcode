@@ -2,16 +2,39 @@
 
 
 def func(nums: list[int], k: int):
-    # We need to construct a sub-array containing non-contiguous elements, and return the max from it.
-    # its size must be at least k.
-    # Out of all possible sub-arrays, we must find the lowest maximum.
+    # We can always select k houses out of the list
+    # If we define the robber to have capability C we have either two outcomes
+    # He can steal from at least k houses
+    # He can't
 
-    # Once we find K houses, adding another house will only increase the maximum - we should
-    # find exactly K houses for this problem
-    
-    # To reduce the maximum, we need to swap the largest element out for another non contiguous one
-    # that is smaller.
+    # If he can - His real minimal capability has to be it or less
+    # If he cannot - His real minimal capability has to be more than that
 
-    # Maybe use a max heap queue and find the k-th smallest number?
+    # Since we need to find the minimum capability, we want to find out if he can steal from k houses -
+    # so we count how many non-consecutive houses with money C or less there are and if its k or more.
 
-    pass
+    def can_steal(cap: int) -> bool:
+        nonlocal k
+        count = 0
+        i = 0
+
+        while i < len(nums):
+            if nums[i] <= cap:
+                count += 1
+                i += 2
+            else:
+                i += 1
+
+        return count >= k
+
+    left, right = min(nums), max(nums)
+
+    while left < right:
+        mid = (left + right) // 2
+
+        if can_steal(mid):
+            right = mid
+        else:
+            left = mid + 1
+
+    return right

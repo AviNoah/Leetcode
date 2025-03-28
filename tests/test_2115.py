@@ -24,5 +24,5 @@ tests = [
 
 @pytest.mark.parametrize("args, expected", tests)
 def test_0(args, expected):
-    assert func(*args) == expected
+    assert set(func(*args)) == expected
     pass

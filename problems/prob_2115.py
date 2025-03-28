@@ -1,37 +1,43 @@
 # https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/description/?envType=daily-question&envId=2025-03-21
 
 
-from functools import cache
+from collections import defaultdict, deque
 
 
 def func(recipes: list[str], ingredients: list[list[str]], supplies: list[str]):
-    # We can either loop over all recipes, adding them to available supplies when crafted
-    # and stop when no new recipes are added, or we can simplify the recipe of each recursively
-    # and then check if it is a subset of supplies.
+    # Supplies can be used to hold our resources and anything we can craft.
+    # If a recipe is dependent on another, we would like to defer it to the end of the list,
+    # hopefully that recipe would be created by then - we can do this only if the recipe is queued to be
+    # crafted.
 
-    # We can simplify the recipes list to a set of their base ingredients,
-    # if a recipe includes another recipe, simplify
-    # At the end, check if base ingredients set is contained with in ingredients
+    # If we encounter an available supply, all recipes dependent on it now have it
 
-    cookbook = {recipe: frozenset(ings) for recipe, ings in zip(recipes, ingredients)}
+    graph: dict[str, list] = defaultdict(list)  # Ingredient to list of recipes
+    in_degree = {}  # How far the recipe is from being crafted
 
-    # Use dp to memoize
-    @cache
-    def simplify(ingredients) -> set[str]:
-        nonlocal cookbook
-        base_ing: set[str] = set()
+    for recipe, ing_list in zip(recipes, ingredients):
+        in_degree[recipe] = len(ing_list)
+        for ing in ing_list:
+            graph[ing].append(recipe)
 
-        for ing in ingredients:
-            if ing in cookbook:
-                base_ing |= simplify(cookbook[ing])
-            else:
-                base_ing.add(ing)
+    queue = deque(supplies)
+    craftable: list[str] = []
 
-        return base_ing
+    # We dont really need to care how many of a supply we need, we know a recipe of 3
+    # ingredients has degree 3 recipe, when we encounter the necessary ingredients, we can simply
+    # decrease the degree since we can make sure a supply doesn't appear twice in the queue
+    while queue:
+        item = queue.popleft()
 
-    x = set(
-        recipe
-        for recipe, ingredients in cookbook.items()
-        if simplify(ingredients).issubset(supplies)
-    )
-    return x
+        if item in in_degree:
+            # Recipe is already available as a supply, add to craftables
+            craftable.append(item)
+
+        # Supply available, reduce degree counter for each recipe dependent on it
+        for recipe in graph[item]:
+            in_degree[recipe] -= 1
+            if in_degree[recipe] == 0:
+                # Now a supply
+                queue.append(recipe)
+
+    return craftable

@@ -15,9 +15,9 @@ tests = [
         (
             ["bread", "sandwich", "burger"],
             [["yeast", "flour"], ["bread", "meat"], ["sandwich", "meat", "bread"]],
-            ["bread", "sandwich", "burger"],
+            ["yeast", "flour", "meat"],
         ),
-        set(["bread"]),
+        set(["bread", "sandwich", "burger"]),
     ),
 ]
 

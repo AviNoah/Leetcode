@@ -75,25 +75,25 @@ def func(nums: list[int], k: int):
     # Contributions guaranteed to be unique - since we use nle and nre
     contributions = []
 
-    for i in range(len(scores)):
+    for i, num in enumerate(nums):
         left_count = i - left[i]
         right_count = right[i] - i
         count = left_count * right_count
 
-        contributions.append((scores[i], count))
+        contributions.append((num, count))
 
     contributions.sort(reverse=True, key=lambda x: x[0])
 
     result = 1
     remaining_operations = k
 
-    for score, count in contributions:
+    for num, count in contributions:
         if remaining_operations <= 0:
             break
 
         # We can either use all or some of the count
         use_count = min(remaining_operations, count)
-        result *= score**use_count
+        result *= num**use_count
 
         remaining_operations -= use_count
 

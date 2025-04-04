@@ -61,7 +61,7 @@ def nre(scores: list[int]):
     return results
 
 
-def func(nums: list[str], k: int):
+def func(nums: list[int], k: int):
     # We have some quality - prime score which all numbers have in the array
     # Select the left-most maximum one out of unique sub arrays k times - overlap?, and multiply with score
     # return max possible score
@@ -69,8 +69,32 @@ def func(nums: list[str], k: int):
     # We first need to calculate all prime scores
     scores = [prime_score(num) for num in nums]
 
-    # We then find maximum possible prime score multiplication
     left = nle(scores)
     right = nre(scores)
-    score = ...
-    return score % (10**9 + 7)
+
+    # Contributions guaranteed to be unique - since we use nle and nre
+    contributions = []
+
+    for i in range(len(scores)):
+        left_count = i - left[i]
+        right_count = right[i] - i
+        count = left_count * right_count
+
+        contributions.append((scores[i], count))
+
+    contributions.sort(reverse=True, key=lambda x: x[0])
+
+    result = 1
+    remaining_operations = k
+
+    for score, count in contributions:
+        if remaining_operations <= 0:
+            break
+
+        # We can either use all or some of the count
+        use_count = min(remaining_operations, count)
+        result *= score**use_count
+
+        remaining_operations -= use_count
+
+    return result % (10**9 + 7)

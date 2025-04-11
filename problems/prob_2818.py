@@ -33,7 +33,7 @@ def nle(scores: list[int]):
     stack: list[int] = []
 
     for i, score in enumerate(scores):
-        while stack and scores[stack[-1]] <= score:
+        while stack and scores[stack[-1]] < score:
             stack.pop()
 
         if stack:
@@ -52,7 +52,7 @@ def nre(scores: list[int]):
     stack: list[int] = []
 
     for i, score in enumerate(scores):
-        while stack and scores[stack[-1]] <= score:
+        while stack and scores[stack[-1]] < score:
             index = stack.pop()
             results[index] = i
 

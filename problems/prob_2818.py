@@ -95,8 +95,7 @@ def func(nums: list[int], k: int):
 
         # We can either use all or some of the count
         use_count = min(remaining_operations, count)
-        result *= num**use_count
-        result %= MOD
+        result = (result * pow(num, use_count, MOD)) % MOD
 
         remaining_operations -= use_count
 

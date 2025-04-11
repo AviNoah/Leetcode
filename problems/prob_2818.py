@@ -3,6 +3,8 @@
 
 from math import sqrt
 
+MOD = 10**9 + 7
+
 
 def prime_score(num):
     "Prime score is num of distinct prime factors"
@@ -94,7 +96,8 @@ def func(nums: list[int], k: int):
         # We can either use all or some of the count
         use_count = min(remaining_operations, count)
         result *= num**use_count
+        result %= MOD
 
         remaining_operations -= use_count
 
-    return result % (10**9 + 7)
+    return result

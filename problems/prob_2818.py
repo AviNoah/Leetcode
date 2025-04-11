@@ -1,30 +1,25 @@
 # https://leetcode.com/problems/apply-operations-to-maximize-score/description/?envType=daily-question&envId=2025-03-29
 
 
-from math import sqrt
-
 MOD = 10**9 + 7
 
 
-def prime_score(num):
-    "Prime score is num of distinct prime factors"
-    prime_set = set()
+def sieve_prime_factors(limit):
+    spf = list(range(limit + 1))  # Smallest prime factor for each number
+    for i in range(2, int(limit**0.5) + 1):
+        if spf[i] == i:  # i is a prime number
+            for j in range(i * i, limit + 1, i):
+                if spf[j] == j:
+                    spf[j] = i
+    return spf
 
-    while num % 2 == 0:
-        prime_set.add(2)
-        num /= 2
 
-    # Skip even numbers
-    for i in range(3, int(sqrt(num)) + 1, 2):
-        while num % i == 0:
-            num /= i
-            prime_set.add(i)
-
-    if num > 1:
-        # is prime
-        prime_set.add(num)
-
-    return len(prime_set)
+def prime_score(num, spf):
+    prime_factors = set()
+    while num != 1:
+        prime_factors.add(spf[num])
+        num //= spf[num]
+    return len(prime_factors)
 
 
 def nle(scores: list[int]):
@@ -69,7 +64,8 @@ def func(nums: list[int], k: int):
     # return max possible score
 
     # We first need to calculate all prime scores
-    scores = [prime_score(num) for num in nums]
+    spf = sieve_prime_factors(max(nums))
+    scores = [prime_score(num, spf) for num in nums]
 
     left = nle(scores)
     right = nre(scores)

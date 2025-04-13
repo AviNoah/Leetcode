@@ -7,13 +7,14 @@ def func(grid: list[list[int]], queries: list[int]) -> list[int]:
 
     # We can use a stack to do flood-fill, we need a way to cache answers for performance too
 
+    ROWS = len(grid)
+    COLS = len(grid[0])
+
     def compute_query(query: int):
         stack = [(0, 0)]
-        ROWS = len(grid)
-        COLS = len(grid[0])
-
         count = 0
         visited = set()
+
         while stack:
             row, col = stack.pop()
 

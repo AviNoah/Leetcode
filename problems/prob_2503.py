@@ -10,10 +10,15 @@ def func(grid: list[list[int]], queries: list[int]) -> list[int]:
     ROWS = len(grid)
     COLS = len(grid[0])
 
-    def compute_query(query: int):
-        stack = [(0, 0)]
-        count = 0
-        visited = set()
+    QUERIES_DICT: dict[int, int] = {}
+
+    stack = [(0, 0)]
+    count = 0
+    visited = set()
+
+    # O(N*M) - count of queries don't really matter
+    for query in sorted(queries):
+        next_stack = []
 
         while stack:
             row, col = stack.pop()
@@ -22,6 +27,7 @@ def func(grid: list[list[int]], queries: list[int]) -> list[int]:
                 continue
 
             if query <= grid[row][col]:
+                next_stack.append((row, col))
                 continue
 
             count += 1
@@ -36,8 +42,8 @@ def func(grid: list[list[int]], queries: list[int]) -> list[int]:
             if col < COLS - 1:
                 stack.append((row, col + 1))
 
-        return count
+        QUERIES_DICT[query] = count
+        stack = next_stack
 
-    # Unoptimized first revision - does not use cache, re-runs flood fill on matrix for each query
-
-    return [compute_query(q) for q in queries]
+    # O(q)
+    return [QUERIES_DICT[query] for query in queries]
